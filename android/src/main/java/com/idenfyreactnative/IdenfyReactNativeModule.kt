@@ -36,7 +36,7 @@ class IdenfyReactNativeModule(reactContext: ReactApplicationContext) :
   fun start(config: ReadableMap, promise: Promise) {
     idenfyReactNativeCallbacksUseCase.setCallbacksReceiver(promise)
 
-    val currentActivity = currentActivity
+    val currentActivity = getCurrentActivity()
 
     if (currentActivity == null) {
       idenfyReactNativeCallbacksUseCase.getCallbackReceiver()
@@ -50,6 +50,9 @@ class IdenfyReactNativeModule(reactContext: ReactApplicationContext) :
       val authToken = GetSdkDataFromConfig.getSdkTokenFromConfig(config)
       val idenfySettingsV2 = GetSdkDataFromConfig.getIdenfySettingsFromConfig(config)
       idenfySettingsV2.authToken = authToken
+
+      // Colors are now configured via XML resources (idenfy_colors.xml)
+      // See documentation: https://documentation.idenfy.com/mobile/Android/android-customizing-flow
 
       IdenfyController.getInstance().initializeIdenfySDKV2WithManual(
         currentActivity,
@@ -75,7 +78,7 @@ class IdenfyReactNativeModule(reactContext: ReactApplicationContext) :
   fun startFaceReAuth(config: ReadableMap, promise: Promise) {
     idenfyReactNativeCallbacksUseCase.setCallbacksReceiver(promise)
 
-    val currentActivity = currentActivity
+    val currentActivity = getCurrentActivity()
 
     if (currentActivity == null) {
       idenfyReactNativeCallbacksUseCase.getCallbackReceiver()

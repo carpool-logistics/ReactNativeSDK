@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="idenfyMainColorV2">#003188</color>
+
+    <color name="idenfyBlack">#020618</color>
+    
+    <color name="idenfyGradientButtonColorEnd">#003188</color>
+    <color name="idenfyGradientButtonColorStart">#003188</color>
+
+    <color name="idenfyTakePhotoButtonBackgroundFocused">#003188</color>
+    
+    <color name="idenfyFacePhotoResultViewCardTitleColor">#003188</color>
+    
+
+    <color name="idenfyPhotoResultDetailsCardBackgroundColorV2">#FFFFFF</color>
+
+</resources>
+
