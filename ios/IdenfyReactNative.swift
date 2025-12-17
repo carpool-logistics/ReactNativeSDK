@@ -26,7 +26,9 @@ class IdenfyReactNative: NSObject {
                      rejecter reject: @escaping RCTPromiseRejectBlock) {
         do {
             let authToken = GetSdkConfig.getAuthToken(config: config)
-            let idenfySettingsV2 = GetSdkConfig.getIdenfySettingsFromConfig(config: config, authToken: authToken)
+            let idenfySettingsV2 = IdenfyBuilderV2()
+                .withAuthToken(authToken)
+                .build()
             
             let idenfyColorMain = "#020618"
             let idenfyColorButton = "#003188"
