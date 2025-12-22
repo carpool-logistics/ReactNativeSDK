@@ -1,12 +1,12 @@
 import Foundation
 import iDenfySDK
 import idenfyviews
-@objc(IdenfyReactNative)
-class IdenfyReactNative: NSObject {
-    
+
+@objc(IdenfyReactNative) class IdenfyReactNative: NSObject {
     @objc(start:withResolver:withRejecter:)
     func start(_ config: NSDictionary,
-               resolve:@escaping RCTPromiseResolveBlock,reject:@escaping RCTPromiseRejectBlock) {
+               resolve: @escaping RCTPromiseResolveBlock,
+               reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             self.run(withConfig: config, resolver: resolve, rejecter: reject)
         }
@@ -21,7 +21,8 @@ class IdenfyReactNative: NSObject {
         }
     }
     
-  @MainActor private func run(withConfig config: NSDictionary,
+    @MainActor
+    private func run(withConfig config: NSDictionary,
                      resolver resolve: @escaping RCTPromiseResolveBlock,
                      rejecter reject: @escaping RCTPromiseRejectBlock) {
         do {
@@ -30,41 +31,14 @@ class IdenfyReactNative: NSObject {
                 .withAuthToken(authToken)
                 .build()
             
-            let idenfyColorMain = "#020618"
-            let idenfyColorButton = "#003188"
+            setupCustomization()
             
-            IdenfyCommonColors.idenfyMainColorV2 = UIColor(hexString: idenfyColorButton)
-            IdenfyCommonColors.idenfyMainDarkerColorV2 = UIColor(hexString: idenfyColorMain)
-            IdenfyCommonColors.idenfyGradientColor1V2 = UIColor(hexString: idenfyColorButton)
-            IdenfyCommonColors.idenfyGradientColor2V2 = UIColor(hexString: idenfyColorButton)
-
-            IdenfyToolbarUISettingsV2.idenfyDefaultToolbarBackIconTintColor = UIColor(hexString: idenfyColorMain)
-            IdenfyToolbarUISettingsV2.idenfyDefaultToolbarLogoIconTintColor = UIColor(hexString: idenfyColorMain)
-
-            IdenfyToolbarUISettingsV2.idenfyLanguageSelectionToolbarLanguageSelectionIconTintColor  = UIColor(hexString: idenfyColorMain)
-            IdenfyToolbarUISettingsV2.idenfyLanguageSelectionToolbarCloseIconTintColor = UIColor(hexString: idenfyColorMain)
-
-            IdenfyCommonColors.idenfyPhotoResultDetailsCardBackgroundColorV2 = UIColor(hexString: "#FFFFFF")
-
-            IdenfyPhotoResultViewUISettingsV2.idenfyPhotoResultViewDetailsCardTitleColor = UIColor(hexString: idenfyColorButton)
-
-            let idenfyViewsV2:IdenfyViewsV2 = IdenfyViewsBuilderV2()
-                .withCountryCellView(CountryCell.self)
-                .build()
-
-
-
             let idenfyController = IdenfyController.shared
-            idenfyController.initializeIdenfySDKV2WithManual(idenfySettingsV2: idenfySettingsV2, idenfyViewsV2: idenfyViewsV2)
-
+            idenfyController.initializeIdenfySDKV2WithManual(idenfySettingsV2: idenfySettingsV2)
             let idenfyVC = idenfyController.instantiateNavigationController()
-
             idenfyVC.modalPresentationStyle = .fullScreen
-
             UIApplication.shared.windows.first?.rootViewController?.present(idenfyVC, animated: true)
-
             handleSdkCallbacks(idenfyController: idenfyController, resolver: resolve)
-            
         } catch let error as NSError {
             reject("error", error.domain, error)
             return
@@ -75,15 +49,14 @@ class IdenfyReactNative: NSObject {
     }
     
     private func handleSdkCallbacks(idenfyController: IdenfyController, resolver resolve: @escaping RCTPromiseResolveBlock) {
-        idenfyController.handleIdenfyCallbacksWithManualResults(idenfyIdentificationResult: {
-            idenfyIdentificationResult
-            in
+        idenfyController.handleIdenfyCallbacksWithManualResults(idenfyIdentificationResult: { idenfyIdentificationResult in
             let response = NativeResponseToReactNativeResponseMapper.map(o: idenfyIdentificationResult)
             resolve(response)
         })
     }
     
-  @MainActor private func runFaceReauth(withConfig config: NSDictionary,
+    @MainActor
+    private func runFaceReauth(withConfig config: NSDictionary,
                                resolver resolve: @escaping RCTPromiseResolveBlock,
                                rejecter reject: @escaping RCTPromiseRejectBlock) {
         do {
@@ -91,18 +64,20 @@ class IdenfyReactNative: NSObject {
             let immediateRedirect = GetSdkConfig.getImmediateRedirectFromConfig(config: config)
             let idenfyFaceAuthUISettings = GetSdkConfig.getFaceAuthSettingsFromConfig(config: config)
             
+            setupCustomization()
+            
             let idenfyController = IdenfyController.shared
-            let faceReauthenticationInitialization = FaceAuthenticationInitialization(authenticationToken: authToken, withImmediateRedirect: immediateRedirect, idenfyFaceAuthUISettings: idenfyFaceAuthUISettings)
+            let faceReauthenticationInitialization = FaceAuthenticationInitialization(
+                authenticationToken: authToken,
+                withImmediateRedirect: immediateRedirect,
+                idenfyFaceAuthUISettings: idenfyFaceAuthUISettings
+            )
             idenfyController.initializeFaceAuthentication(faceAuthenticationInitialization: faceReauthenticationInitialization)
             
             let idenfyVC = idenfyController.instantiateNavigationController()
-            
             idenfyVC.modalPresentationStyle = .fullScreen
-            
             UIApplication.shared.windows.first?.rootViewController?.present(idenfyVC, animated: true)
-            
             handleFaceReauthSdkCallbacks(idenfyController: idenfyController, resolver: resolve)
-            
         } catch let error as NSError {
             reject("error", error.domain, error)
             return
@@ -113,11 +88,30 @@ class IdenfyReactNative: NSObject {
     }
     
     private func handleFaceReauthSdkCallbacks(idenfyController: IdenfyController, resolver resolve: @escaping RCTPromiseResolveBlock) {
-        idenfyController.handleIdenfyCallbacksForFaceAuthentication(faceAuthenticationResult: {
-            faceAuthenticationResult
-            in
+        idenfyController.handleIdenfyCallbacksForFaceAuthentication(faceAuthenticationResult: { faceAuthenticationResult in
             let response = NativeResponseToReactNativeResponseMapper.mapFaceReauth(o: faceAuthenticationResult)
             resolve(response)
         })
+    }
+    
+    @MainActor
+    private func setupCustomization() {
+        let idenfyColorMain = "#020618"
+        let idenfyColorButton = "#003188"
+        
+        IdenfyCommonColors.idenfyMainColorV2 = UIColor(hexString: idenfyColorButton)
+        IdenfyCommonColors.idenfyMainDarkerColorV2 = UIColor(hexString: idenfyColorMain)
+        IdenfyCommonColors.idenfyGradientColor1V2 = UIColor(hexString: idenfyColorButton)
+        IdenfyCommonColors.idenfyGradientColor2V2 = UIColor(hexString: idenfyColorButton)
+        
+        IdenfyToolbarUISettingsV2.idenfyDefaultToolbarBackIconTintColor = UIColor(hexString: idenfyColorMain)
+        IdenfyToolbarUISettingsV2.idenfyDefaultToolbarLogoIconTintColor = UIColor(hexString: idenfyColorMain)
+        
+        IdenfyToolbarUISettingsV2.idenfyLanguageSelectionToolbarLanguageSelectionIconTintColor = UIColor(hexString: idenfyColorMain)
+        IdenfyToolbarUISettingsV2.idenfyLanguageSelectionToolbarCloseIconTintColor = UIColor(hexString: idenfyColorMain)
+        
+        IdenfyCommonColors.idenfyPhotoResultDetailsCardBackgroundColorV2 = UIColor(hexString: "#FFFFFF")
+        
+        IdenfyPhotoResultViewUISettingsV2.idenfyPhotoResultViewDetailsCardTitleColor = UIColor(hexString: idenfyColorButton)
     }
 }
