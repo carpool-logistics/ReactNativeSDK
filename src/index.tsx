@@ -18,6 +18,7 @@ const IdenfyReactNative = NativeModules.IdenfyReactNative
     );
 
 export function start(config: any): Promise<any> {
+  console.log('start');
   return IdenfyReactNative.start(config);
 }
 
