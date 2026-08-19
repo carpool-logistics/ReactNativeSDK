@@ -70,7 +70,13 @@ class GetSdkConfig {
           idenfyUISettingsV2 = idenfyUISettingsV2.withImmediateRedirect(forcedEnum)
         }
         
-        idenfyUISettingsV2.skipInternalPrivacyPolicyView = uiSettingsMap["skipInternalPrivacyPolicyView"] as? Bool ?? false
+        // iDenfy SDK 9.x replaced skipInternalPrivacyPolicyView with these UI flags.
+        idenfyUISettingsV2.mismatchTagsAlert = uiSettingsMap["mismatchTagsAlert"] as? Bool ?? true
+        idenfyUISettingsV2.withCountryAndDocumentSelectionJoined = uiSettingsMap["withCountryAndDocumentSelectionJoined"] as? Bool ?? true
+
+        if let useBottomSheetDialogs = uiSettingsMap["useBottomSheetDialogs"] as? Bool {
+          idenfyUISettingsV2 = idenfyUISettingsV2.withBottomSheetDialogs(useBottomSheetDialogs)
+        }
         
         if let documentFrameVisibility = uiSettingsMap["documentCameraFrameVisibility"] as? NSDictionary,
            let visibilityValue = documentFrameVisibility["value"] as? String {
